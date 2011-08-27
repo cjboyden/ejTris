@@ -14,7 +14,7 @@ public class ShapeHelper {
     
     public static final Random randomGenerator = new Random();
     
-    public static Image createShape(byte[][] shape) throws SlickException {
+    public static Image createImage(byte[][] shape) throws SlickException {
         Image image = new Image(shape[0].length * BLOCK_WIDTH, shape.length * BLOCK_HEIGHT);
         
         Graphics gc = image.getGraphics();

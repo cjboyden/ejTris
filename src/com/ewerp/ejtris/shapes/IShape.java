@@ -31,4 +31,6 @@ public interface IShape {
     public List<Point> getTranslatedPoints();
     
     public boolean isCollision(IShape shape);
+    
+    public void rotate();
 }

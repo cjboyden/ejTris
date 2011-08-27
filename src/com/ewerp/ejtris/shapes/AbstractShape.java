@@ -9,20 +9,20 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
 public abstract class AbstractShape implements IShape {
-    protected final Image image;
+    protected Image image;
     
     protected int pitX;
     protected int pitY;
     
-    protected final int height;
-    protected final int width;
+    protected int height;
+    protected int width;
     
-    protected final byte[][]shapeDefinition;
+    protected byte[][]shapeDefinition;
     
     protected Orientation orientation = Orientation.NORTH;
     
     public AbstractShape(byte[][] shape) throws SlickException {
-        image = ShapeHelper.createShape(shape);
+        image = ShapeHelper.createImage(shape);
         height = shape.length;
         width = shape[0].length;
         shapeDefinition = shape;
@@ -120,5 +120,26 @@ public abstract class AbstractShape implements IShape {
         }
         
         return points;
+    }
+    
+    @Override
+    public void rotate() {
+        try {
+            byte[][] newShapeDefinition = new byte[width][height];
+            
+            for(int originY = 0; originY < height; originY++) {
+                for(int originX = 0; originX < width; originX++) {
+                    newShapeDefinition[originX][height - (originY + 1)] = shapeDefinition[originY][originX];
+                }
+            }
+            
+            image = ShapeHelper.createImage(newShapeDefinition);
+            height = newShapeDefinition.length;
+            width = newShapeDefinition[0].length;
+            shapeDefinition = newShapeDefinition;
+        } catch (SlickException e) {
+            //TODO: Log this error or something
+            e.printStackTrace();
+        }
     }
 }

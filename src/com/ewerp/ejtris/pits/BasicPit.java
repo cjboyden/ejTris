@@ -52,11 +52,11 @@ public class BasicPit {
         
         Input input = gameContainer.getInput();
 
-        if (input.isKeyPressed(Input.KEY_SPACE)) {
-            // Rotate the block
-        } else if (input.isKeyPressed(Input.KEY_DOWN)) {
+       if (input.isKeyPressed(Input.KEY_DOWN)) {
             // Move the block down
             moveDown = true;
+        } else if (input.isKeyPressed(Input.KEY_SPACE)) {
+            activeShape.rotate();
         } else if (input.isKeyPressed(Input.KEY_LEFT)) {
             // Move the block left
             if(activeShape.getLeft() > 0) {
