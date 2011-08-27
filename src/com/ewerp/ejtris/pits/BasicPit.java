@@ -29,6 +29,7 @@ public class BasicPit {
     
     public BasicPit() throws SlickException {
         activeShape = new ReverseL();
+        lastTick = System.currentTimeMillis();
     }
     
     public void render(GameContainer gameContainer, StateBasedGame game, Graphics graphicsContext) {
@@ -81,6 +82,11 @@ public class BasicPit {
                     activeShape.setTop(activeShape.getTop() - 1);
                     inactiveShapes.add(activeShape);
                     activeShape = new OneXSix();
+                    
+                    if(isCollision()) {
+                        // GAME OVER!!!
+                    }
+                    
                 } catch (SlickException e) {
                     e.printStackTrace();
                 }
