@@ -6,7 +6,6 @@ public class ReverseL  extends AbstractShape {
     public ReverseL() throws SlickException {
         super(new byte[][] { { 'O', 'X' },
                              { 'O', 'X' },
-                             { 'O', 'X' },
                              { 'X', 'X' }});
     }
 

@@ -1,6 +1,8 @@
 package com.ewerp.ejtris.pits;
 
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.newdawn.slick.GameContainer;
@@ -9,9 +11,8 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import com.ewerp.ejtris.shapes.AbstractShape;
 import com.ewerp.ejtris.shapes.IShape;
-import com.ewerp.ejtris.shapes.OneXSix;
-import com.ewerp.ejtris.shapes.ReverseL;
 import com.ewerp.ejtris.shapes.ShapeHelper;
 
 public class BasicPit {
@@ -23,20 +24,26 @@ public class BasicPit {
     
     private long lastTick = 0;
     
-    protected List<IShape> inactiveShapes = new ArrayList<IShape>();
+    protected IShape inactiveShape;
+    protected final byte[][] inactiveShapeDefinition;
     
-    protected IShape activeShape = null;
+    protected IShape activeShape;
     
     public BasicPit() throws SlickException {
-        activeShape = new ReverseL();
+        inactiveShapeDefinition = new byte[height][width];
+        for(int y = 0; y < height; y++) {
+            Arrays.fill(inactiveShapeDefinition[y], (byte)'O');
+        }
+        
+        inactiveShape = new AbstractShape(inactiveShapeDefinition) {};
+        
+        activeShape = ShapeHelper.generateShape();
         lastTick = System.currentTimeMillis();
     }
     
     public void render(GameContainer gameContainer, StateBasedGame game, Graphics graphicsContext) {
+        inactiveShape.draw(graphicsContext, pitX, pitY);
         activeShape.draw(graphicsContext, pitX + (activeShape.getLeft() * ShapeHelper.BLOCK_WIDTH), pitY + (activeShape.getTop() * ShapeHelper.BLOCK_HEIGHT));
-        for(IShape block : inactiveShapes) {
-            block.draw(graphicsContext, pitX + (block.getLeft() * ShapeHelper.BLOCK_WIDTH), pitY + (block.getTop() * ShapeHelper.BLOCK_HEIGHT));
-        }
     }
     
     public void update(GameContainer gameContainer, StateBasedGame game, int elapsedTime) {
@@ -80,11 +87,16 @@ public class BasicPit {
                 try {
                     // Back it up to stack
                     activeShape.setTop(activeShape.getTop() - 1);
-                    inactiveShapes.add(activeShape);
-                    activeShape = new OneXSix();
+                    mergeActiveShape();
+                    
+                    // TODO: Test line building
+                    lineTest();
+
+                    activeShape = ShapeHelper.generateShape();
                     
                     if(isCollision()) {
-                        // GAME OVER!!!
+                        // TODO: GAME OVER!!!
+                        System.out.println("Game over");
                     }
                     
                 } catch (SlickException e) {
@@ -103,12 +115,45 @@ public class BasicPit {
             return true;
         }
         
-        for(IShape shape : inactiveShapes) {
-            if(activeShape.isCollision(shape)) {
-                return true;
-            }
+        if(activeShape.isCollision(inactiveShape)) {
+            return true;
         }
         
         return false;
+    }
+    
+    /**
+     * Merge the active shape into the inactive shape
+     */
+    protected void mergeActiveShape() throws SlickException {
+        for(Point p : activeShape.getTranslatedPoints()) {
+            inactiveShapeDefinition[p.y][p.x] = 'X';
+        }
+        
+        inactiveShape = new AbstractShape(inactiveShapeDefinition) {};
+    }
+    
+    protected void lineTest() {
+        List<Integer> lines = new ArrayList<Integer>();
+        
+        for(int y = 0; y < inactiveShapeDefinition.length; y++) {
+            for(int x = 0; x <= inactiveShapeDefinition[y].length; x++) {
+                if(x == inactiveShapeDefinition[y].length) {
+                    // We have a complete line, add it to the list
+                    lines.add(y);
+                    break;
+                }
+                if(inactiveShapeDefinition[y][x] != 'X') {
+                    break;
+                }
+            }
+        }
+        
+        if(lines.size() > 0) {
+            // We have matching lines, do something!
+            for(Integer i : lines) {
+                System.out.println("Line found: " + i);
+            }
+        }
     }
 }
