@@ -51,7 +51,13 @@ public class BasicPit {
         boolean moveDown = false;
         
         Input input = gameContainer.getInput();
-
+       
+       if(input.isKeyDown(Input.KEY_DOWN)) {
+           if(currentTime - lastTick > 100) {
+               moveDown = true;
+           }
+       }
+        
        if (input.isKeyPressed(Input.KEY_DOWN)) {
             // Move the block down
             moveDown = true;
