@@ -123,7 +123,28 @@ public abstract class AbstractShape implements IShape {
     }
     
     @Override
-    public void rotate() {
+    public void rotateCounterClockwise() {
+        try {
+            byte[][] newShapeDefinition = new byte[width][height];
+            
+            for(int originY = 0; originY < height; originY++) {
+                for(int originX = 0; originX < width; originX++) {
+                    newShapeDefinition[width - (originX + 1)][originY] = shapeDefinition[originY][originX];
+                }
+            }
+            
+            image = ShapeHelper.createImage(newShapeDefinition);
+            height = newShapeDefinition.length;
+            width = newShapeDefinition[0].length;
+            shapeDefinition = newShapeDefinition;
+        } catch (SlickException e) {
+            //TODO: Log this error or something
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void rotateClockwise() {
         try {
             byte[][] newShapeDefinition = new byte[width][height];
             

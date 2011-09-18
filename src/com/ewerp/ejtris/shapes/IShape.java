@@ -32,5 +32,6 @@ public interface IShape {
     
     public boolean isCollision(IShape shape);
     
-    public void rotate();
+    public void rotateCounterClockwise();
+    public void rotateClockwise();
 }

@@ -83,7 +83,11 @@ public class BasicPit {
             // Move the block down
             moveDown = true;
         } else if (input.isKeyPressed(Input.KEY_SPACE)) {
-            activeShape.rotate();
+            activeShape.rotateClockwise();
+            if(isCollision()) {
+                // Undo the rotation, we just rotated into another shape
+                activeShape.rotateCounterClockwise();
+            }
         } else if (input.isKeyPressed(Input.KEY_LEFT)) {
             // Move the block left
             moveLeft = true;
