@@ -7,10 +7,12 @@ import java.util.List;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import com.ewerp.ejtris.IEJTrisController;
 import com.ewerp.ejtris.shapes.AbstractShape;
 import com.ewerp.ejtris.shapes.IShape;
 import com.ewerp.ejtris.shapes.ShapeHelper;
@@ -30,15 +32,21 @@ public class BasicPit {
     protected final byte[][] inactiveShapeDefinition;
 
     protected IShape activeShape;
+    
+    protected IEJTrisController controller;
 
-    public BasicPit() throws SlickException {
+    public BasicPit(IEJTrisController ejTrisController) throws SlickException {
         inactiveShapeDefinition = new byte[height][width];
+        controller = ejTrisController;
+        initialize();
+    }
+    
+    protected void initialize() throws SlickException {
         for (int y = 0; y < height; y++) {
             Arrays.fill(inactiveShapeDefinition[y], (byte) 'O');
         }
 
-        inactiveShape = new AbstractShape(inactiveShapeDefinition) {
-        };
+        inactiveShape = new AbstractShape(inactiveShapeDefinition) {};
 
         activeShape = ShapeHelper.generateShape();
         lastTick = System.currentTimeMillis();
@@ -116,14 +124,18 @@ public class BasicPit {
                     activeShape.setTop(activeShape.getTop() - 1);
                     mergeActiveShape();
 
-                    // TODO: Test line building
                     lineTest();
 
                     activeShape = ShapeHelper.generateShape();
 
                     if (isCollision()) {
                         // TODO: GAME OVER!!!
-                        System.out.println("Game over");
+                        // Take a screenshot
+                        Image screenshot = new Image(gameContainer.getWidth(), gameContainer.getHeight());
+                        gameContainer.getGraphics().copyArea(screenshot, 0, 0);
+                        screenshot.setAlpha(0.4f);
+                        initialize();
+                        controller.setGameoverState(screenshot);
                     }
 
                 } catch (SlickException e) {
